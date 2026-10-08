@@ -76,21 +76,38 @@
   button.ghost { background: transparent; color: var(--accent); border: 1px solid var(--line); border-radius: 10px; padding: 10px; font-size: 14px; }
   .help { color: var(--muted); font-size: 13px; margin: 8px 0 0; }
   #msg { color: var(--accent); font-size: 13px; min-height: 1em; margin: 0; }
+  .row { display: flex; gap: 8px; align-items: stretch; }
+  .row a.link { flex: 1; min-width: 0; }
+  .act { border: 0; background: rgba(12,10,9,.42); color: #fff; border-radius: 12px; padding: 0 14px; font-size: 18px; cursor: pointer; }
+  .hdr-btns { display: flex; gap: 8px; align-items: center; }
+  .chip { background: transparent; color: var(--accent); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; font-size: 13px; cursor: pointer; }
+  .chip.on { background: var(--accent); color: #1E1A17; border-color: var(--accent); }
+  .status { font-size: 12px; color: var(--muted); }
+  .status.ok { color: #8FD18F; }
+  textarea { font: inherit; font-size: 16px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--field); color: var(--ink); width: 100%; }
+  .btns { display: flex; gap: 8px; }
+  .btns > * { flex: 1; }
+  ol.steps { color: var(--muted); font-size: 14px; padding-left: 20px; margin: 8px 0; }
+  ol.steps li { margin: 4px 0; }
+  a.inl { color: var(--accent); }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <h1><span>bpd</span> Launchpad</h1>
-    <div class="updated" id="updated"></div>
+    <div class="hdr-btns">
+      <span class="status" id="syncStatus"></span>
+      <button class="chip" type="button" id="editToggle" hidden>Edit</button>
+    </div>
   </header>
 
   <input id="search" type="search" placeholder="Find a project or chat…" autocomplete="off" aria-label="Search links">
 
   <main id="groups"><p class="empty">Loading…</p></main>
 
-  <details class="add">
-    <summary>+ Add a link on this device</summary>
+  <details class="add" id="addBox">
+    <summary id="addSummary">+ Add a link</summary>
     <form id="addForm">
       <label>Name
         <input id="fLabel" required maxlength="80" placeholder="Brochures – TITAN WALL">
@@ -101,55 +118,119 @@
       <label>Group
         <select id="fGroup"></select>
       </label>
-      <button class="primary" type="submit">Add button</button>
+      <label>Note (optional)
+        <input id="fNote" maxlength="120" placeholder="What it's for">
+      </label>
+      <div class="btns">
+        <button class="primary" type="submit" id="saveBtn">Save link</button>
+        <button class="ghost" type="button" id="cancelEdit" hidden>Cancel</button>
+      </div>
       <p id="msg" role="status"></p>
     </form>
-    <p class="help">Links added here are saved only on this phone or computer. To put them on every device, tap below and paste the copied text into a Claude chat — Claude will add them to the launchpad for good.</p>
-    <p style="margin:10px 0 0"><button class="ghost" type="button" id="copyBtn">Copy my added links for Claude</button></p>
+    <p class="help" id="saveHelp">Saved links appear on all your devices.</p>
+  </details>
+
+  <details class="add" id="connectBox">
+    <summary id="connectSummary">Connect GitHub (one time per device)</summary>
+    <div id="connectBody">
+      <p class="help">This lets the app save links to your Launchpad so they show on every device. Do it once on your phone and once on your laptop.</p>
+      <ol class="steps">
+        <li>Open <a class="inl" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → new access key</a> (signed in as BayProduct).</li>
+        <li>Name it <b>Launchpad</b>. Set Expiration to the longest option.</li>
+        <li>Repository access → <b>Only select repositories</b> → pick <b>bpd-launchpad-</b>.</li>
+        <li>Permissions → Repository permissions → <b>Contents</b> → <b>Read and write</b>.</li>
+        <li>Tap <b>Generate token</b>, copy it, and paste it below.</li>
+      </ol>
+      <form id="connectForm">
+        <label>Access key
+          <input id="fToken" type="password" autocomplete="off" placeholder="github_pat_…" required>
+        </label>
+        <div class="btns" style="margin-top:10px">
+          <button class="primary" type="submit">Connect</button>
+        </div>
+        <p id="cmsg" class="help" role="status"></p>
+      </form>
+    </div>
+    <div id="connectedBody" hidden>
+      <p class="help">Connected. Links you save, edit or delete here update every device.</p>
+      <p style="margin:10px 0 0"><button class="ghost" type="button" id="disconnectBtn">Disconnect this device</button></p>
+    </div>
   </details>
 </div>
 
 <script>
-const KEY = 'bpd-launchpad-local';
+const REPO = 'BayProduct/bpd-launchpad-';
+const API = 'https://api.github.com/repos/' + REPO + '/contents/links.json';
+const TKEY = 'bpd-launchpad-token';
 let base = { groups: [] };
+let editing = null;   // {g, i} when editing an existing link
+let editMode = false;
 
-function loadLocal() {
-  try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; }
-}
-function saveLocal(list) {
-  try { localStorage.setItem(KEY, JSON.stringify(list)); return true; } catch { return false; }
-}
+function getToken() { try { return localStorage.getItem(TKEY) || ''; } catch { return ''; } }
+function setToken(t) { try { t ? localStorage.setItem(TKEY, t) : localStorage.removeItem(TKEY); return true; } catch { return false; } }
 function safeUrl(u) {
   try { const p = new URL(u); return (p.protocol === 'https:' || p.protocol === 'http:') ? p.href : ''; } catch { return ''; }
 }
 function esc(s) {
   return String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
 }
+function b64decode(str) {
+  const bin = atob(str.replace(/\n/g, ''));
+  return new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0)));
+}
+function b64encode(text) {
+  const bytes = new TextEncoder().encode(text);
+  let bin = ''; bytes.forEach(b => bin += String.fromCharCode(b));
+  return btoa(bin);
+}
+
+async function apiGet() {
+  const r = await fetch(API + '?ref=main&t=' + Date.now(), {
+    headers: { Authorization: 'Bearer ' + getToken(), Accept: 'application/vnd.github+json' }, cache: 'no-store'
+  });
+  if (r.status === 401 || r.status === 403 || r.status === 404) throw new Error('auth');
+  if (!r.ok) throw new Error('net');
+  const j = await r.json();
+  return { data: JSON.parse(b64decode(j.content)), sha: j.sha };
+}
+
+// Apply a change to the latest copy on GitHub and save it; retries once if another save happened first.
+async function commitChange(mutate, message) {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const { data, sha } = await apiGet();
+    mutate(data);
+    const r = await fetch(API, {
+      method: 'PUT',
+      headers: { Authorization: 'Bearer ' + getToken(), Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, content: b64encode(JSON.stringify(data, null, 2) + '\n'), sha, branch: 'main' })
+    });
+    if (r.ok) { base = data; return; }
+    if (r.status === 409 || r.status === 422) continue;
+    if (r.status === 401 || r.status === 403 || r.status === 404) throw new Error('auth');
+    throw new Error('net');
+  }
+  throw new Error('conflict');
+}
 
 function render() {
   const q = document.getElementById('search').value.trim().toLowerCase();
-  const local = loadLocal();
   const out = [];
-  base.groups.forEach(g => {
-    const items = [
-      ...(g.links || []).map(l => ({ ...l, local: false })),
-      ...local.map((l, i) => ({ ...l, local: true, idx: i })).filter(l => l.group === g.name)
-    ].filter(l => !q || (l.label + ' ' + (l.note || '') + ' ' + g.name).toLowerCase().includes(q));
+  base.groups.forEach((g, gi) => {
+    const items = (g.links || []).map((l, i) => ({ ...l, i }))
+      .filter(l => !q || (l.label + ' ' + (l.note || '') + ' ' + g.name).toLowerCase().includes(q));
     if (q && !items.length) return;
     const color = esc(g.color || 'var(--accent)');
-    const body = items.length
-      ? items.map(l => {
-          const href = safeUrl(l.url);
-          if (!href) return '';
-          const a = `<a class="link" href="${esc(href)}" target="_blank" rel="noopener">
-              <span class="label">${esc(l.label)}${l.local ? '<span class="tag">this device</span>' : ''}</span>
-              ${l.note ? `<span class="note">${esc(l.note)}</span>` : ''}
-            </a>`;
-          return l.local
-            ? `<div class="row">${a}<button class="del" type="button" aria-label="Remove ${esc(l.label)}" data-idx="${l.idx}">×</button></div>`
-            : a;
-        }).join('')
-      : '';
+    const body = items.map(l => {
+      const href = safeUrl(l.url);
+      if (!href) return '';
+      const a = `<a class="link" href="${esc(href)}" target="_blank" rel="noopener">
+          <span class="label">${esc(l.label)}</span>
+          ${l.note ? `<span class="note">${esc(l.note)}</span>` : ''}
+        </a>`;
+      return editMode
+        ? `<div class="row">${a}<button class="act" type="button" data-act="edit" data-g="${gi}" data-i="${l.i}" aria-label="Edit ${esc(l.label)}">✎</button><button class="act" type="button" data-act="del" data-g="${gi}" data-i="${l.i}" aria-label="Delete ${esc(l.label)}">×</button></div>`
+        : a;
+    }).join('');
     out.push(`<section class="group" style="--gc:${color}">
         <h2>${esc(g.name)}</h2>
         ${body ? `<div class="links">${body}</div>` : '<p class="empty">No links yet.</p>'}
@@ -158,56 +239,159 @@ function render() {
   document.getElementById('groups').innerHTML = out.join('') || '<p class="empty">Nothing matches.</p>';
 }
 
-function fillGroupSelect() {
-  document.getElementById('fGroup').innerHTML =
-    base.groups.map(g => `<option>${esc(g.name)}</option>`).join('');
+function fillGroupSelect(selected) {
+  const sel = document.getElementById('fGroup');
+  sel.innerHTML = base.groups.map(g => `<option>${esc(g.name)}</option>`).join('');
+  if (selected) sel.value = selected;
 }
 
-document.getElementById('groups').addEventListener('click', e => {
-  const btn = e.target.closest('.del');
-  if (!btn) return;
-  const list = loadLocal();
-  list.splice(Number(btn.dataset.idx), 1);
-  saveLocal(list);
-  render();
-});
+function refreshConnectUI() {
+  const on = !!getToken();
+  document.getElementById('connectBody').hidden = on;
+  document.getElementById('connectedBody').hidden = !on;
+  document.getElementById('connectSummary').textContent = on ? 'GitHub connected on this device' : 'Connect GitHub (one time per device)';
+  document.getElementById('editToggle').hidden = !on;
+  document.getElementById('addBox').hidden = !on;
+  const st = document.getElementById('syncStatus');
+  st.textContent = on ? 'Synced' : '';
+  st.className = 'status' + (on ? ' ok' : '');
+  if (!on) { editMode = false; }
+}
+
+function resetForm() {
+  editing = null;
+  document.getElementById('addForm').reset();
+  document.getElementById('addSummary').textContent = '+ Add a link';
+  document.getElementById('saveBtn').textContent = 'Save link';
+  document.getElementById('cancelEdit').hidden = true;
+  fillGroupSelect();
+}
+
+function showError(el, e) {
+  el.textContent = e.message === 'auth'
+    ? 'GitHub refused the key. It may have expired — disconnect and connect again with a new key.'
+    : e.message === 'conflict' ? 'Someone else saved at the same moment. Try again.'
+    : 'Couldn’t reach GitHub. Check your connection and try again.';
+}
 
 document.getElementById('search').addEventListener('input', render);
 
-document.getElementById('addForm').addEventListener('submit', e => {
-  e.preventDefault();
-  const label = document.getElementById('fLabel').value.trim();
-  const url = safeUrl(document.getElementById('fUrl').value.trim());
-  const group = document.getElementById('fGroup').value;
-  const msg = document.getElementById('msg');
-  if (!url) { msg.textContent = 'That link doesn’t look right — it should start with https://'; return; }
-  const list = loadLocal();
-  list.push({ label, url, group });
-  msg.textContent = saveLocal(list) ? 'Added.' : 'Couldn’t save on this device.';
-  e.target.reset();
+document.getElementById('editToggle').addEventListener('click', e => {
+  editMode = !editMode;
+  e.target.classList.toggle('on', editMode);
+  e.target.textContent = editMode ? 'Done' : 'Edit';
   render();
 });
 
-document.getElementById('copyBtn').addEventListener('click', async () => {
-  const list = loadLocal();
-  const msg = document.getElementById('msg');
-  if (!list.length) { msg.textContent = 'No added links to copy yet.'; return; }
-  const text = 'Please add these to my launchpad permanently:\n' +
-    list.map(l => `- ${l.group}: ${l.label} — ${l.url}`).join('\n');
-  try { await navigator.clipboard.writeText(text); msg.textContent = 'Copied — paste it into a Claude chat.'; }
-  catch { prompt('Copy this text:', text); }
+document.getElementById('groups').addEventListener('click', async e => {
+  const btn = e.target.closest('.act');
+  if (!btn) return;
+  const g = base.groups[+btn.dataset.g], i = +btn.dataset.i, link = g.links[i];
+  if (btn.dataset.act === 'edit') {
+    editing = { group: g.name, url: link.url };
+    document.getElementById('fLabel').value = link.label;
+    document.getElementById('fUrl').value = link.url;
+    document.getElementById('fNote').value = link.note || '';
+    fillGroupSelect(g.name);
+    document.getElementById('addSummary').textContent = 'Edit link';
+    document.getElementById('saveBtn').textContent = 'Save changes';
+    document.getElementById('cancelEdit').hidden = false;
+    const box = document.getElementById('addBox'); box.open = true; box.scrollIntoView({ behavior: 'smooth' });
+    return;
+  }
+  if (!confirm('Delete "' + link.label + '" from every device?')) return;
+  const st = document.getElementById('syncStatus');
+  st.textContent = 'Saving…'; st.className = 'status';
+  try {
+    await commitChange(data => {
+      const dg = data.groups.find(x => x.name === g.name);
+      if (dg) dg.links = dg.links.filter(l => l.url !== link.url);
+    }, 'Launchpad: delete ' + link.label);
+    st.textContent = 'Synced'; st.className = 'status ok';
+    render();
+  } catch (err) { st.textContent = 'Not saved'; st.className = 'status'; alert(err.message === 'auth' ? 'GitHub refused the key. Reconnect with a new key.' : 'Couldn’t save. Try again.'); }
 });
 
-fetch('links.json', { cache: 'no-store' })
-  .then(r => r.json())
-  .then(data => {
-    base = data;
-    fillGroupSelect();
+document.getElementById('cancelEdit').addEventListener('click', resetForm);
+
+document.getElementById('addForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const msg = document.getElementById('msg');
+  const label = document.getElementById('fLabel').value.trim();
+  const url = safeUrl(document.getElementById('fUrl').value.trim());
+  const group = document.getElementById('fGroup').value;
+  const note = document.getElementById('fNote').value.trim();
+  if (!url) { msg.textContent = 'That link doesn’t look right — it should start with https://'; return; }
+  const entry = { label, url }; if (note) entry.note = note;
+  const was = editing;
+  msg.textContent = 'Saving…';
+  document.getElementById('saveBtn').disabled = true;
+  try {
+    await commitChange(data => {
+      const tg = data.groups.find(x => x.name === group);
+      if (!tg) throw new Error('net');
+      if (was && was.group === group) {
+        const pos = tg.links.findIndex(l => l.url === was.url);
+        if (pos >= 0) { tg.links[pos] = entry; return; }
+      }
+      if (was) {
+        const og = data.groups.find(x => x.name === was.group);
+        if (og) og.links = og.links.filter(l => l.url !== was.url);
+      }
+      tg.links.push(entry);
+    }, (was ? 'Launchpad: edit ' : 'Launchpad: add ') + label);
+    msg.textContent = was ? 'Saved. Other devices update within a couple of minutes.' : 'Added. Other devices update within a couple of minutes.';
+    resetForm();
     render();
-  })
-  .catch(() => {
+  } catch (err) { showError(msg, err); }
+  finally { document.getElementById('saveBtn').disabled = false; }
+});
+
+document.getElementById('connectForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const cmsg = document.getElementById('cmsg');
+  const t = document.getElementById('fToken').value.trim();
+  if (!setToken(t)) { cmsg.textContent = 'This device can’t store the key.'; return; }
+  cmsg.textContent = 'Checking…';
+  try {
+    const { data } = await apiGet();
+    base = data; render(); fillGroupSelect();
+    // confirm write access without changing anything visible
+    const r = await fetch('https://api.github.com/repos/' + REPO, { headers: { Authorization: 'Bearer ' + t, Accept: 'application/vnd.github+json' } });
+    const j = r.ok ? await r.json() : {};
+    if (!j.permissions || !j.permissions.push) { setToken(''); cmsg.textContent = 'That key can read but not save. Set Contents to "Read and write" and try again.'; return; }
+    document.getElementById('fToken').value = '';
+    cmsg.textContent = '';
+    refreshConnectUI();
+    document.getElementById('connectBox').open = false;
+  } catch (err) {
+    setToken('');
+    cmsg.textContent = err.message === 'auth' ? 'GitHub didn’t accept that key. Check it was made for bpd-launchpad- and copied fully.' : 'Couldn’t reach GitHub. Try again.';
+  }
+});
+
+document.getElementById('disconnectBtn').addEventListener('click', () => {
+  if (!confirm('Remove the GitHub key from this device?')) return;
+  setToken(''); refreshConnectUI(); render();
+});
+
+async function load() {
+  // Connected devices read the live copy straight from GitHub; others use the published page.
+  if (getToken()) {
+    try { const { data } = await apiGet(); base = data; render(); fillGroupSelect(); return; }
+    catch (e) { const st = document.getElementById('syncStatus'); st.textContent = e.message === 'auth' ? 'Key expired' : 'Offline'; st.className = 'status'; }
+  }
+  try {
+    const r = await fetch('links.json?t=' + Date.now(), { cache: 'no-store' });
+    base = await r.json(); render(); fillGroupSelect();
+  } catch {
     document.getElementById('groups').innerHTML = '<p class="empty">Couldn’t load the link list. Check your connection and reload.</p>';
-  });
+  }
+}
+
+refreshConnectUI();
+load();
+document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
