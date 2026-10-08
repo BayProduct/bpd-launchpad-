@@ -90,6 +90,16 @@
   ol.steps { color: var(--muted); font-size: 14px; padding-left: 20px; margin: 8px 0; }
   ol.steps li { margin: 4px 0; }
   a.inl { color: var(--accent); }
+  .group h2 { display: flex; align-items: center; gap: 6px; }
+  .group h2 .gname { flex: 1; }
+  .gact { border: 0; background: rgba(12,10,9,.35); color: #fff; border-radius: 8px; padding: 4px 10px; font-size: 14px; cursor: pointer; }
+  .acts { display: flex; gap: 6px; }
+  .act.sm { padding: 0 10px; font-size: 15px; }
+  .swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+  .sw { width: 36px; height: 36px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; }
+  .sw.sel { border-color: #fff; box-shadow: 0 0 0 2px var(--accent); }
+  #addSection { margin: 0 0 14px; width: 100%; }
+  .danger { color: #FF8A80 !important; border-color: #6A3A36 !important; }
 </style>
 </head>
 <body>
@@ -128,6 +138,23 @@
       <p id="msg" role="status"></p>
     </form>
     <p class="help" id="saveHelp">Saved links appear on all your devices.</p>
+  </details>
+
+  <details class="add" id="sectionBox" hidden>
+    <summary id="sectionSummary">Section</summary>
+    <form id="sectionForm">
+      <label>Section name
+        <input id="sName" required maxlength="40" placeholder="TITAN WALL">
+      </label>
+      <label>Color</label>
+      <div class="swatches" id="swatches"></div>
+      <div class="btns">
+        <button class="primary" type="submit" id="sSave">Save section</button>
+        <button class="ghost" type="button" id="sCancel">Cancel</button>
+      </div>
+      <p style="margin:0"><button class="ghost danger" type="button" id="sDelete" hidden>Delete this section</button></p>
+      <p id="smsg" class="help" role="status"></p>
+    </form>
   </details>
 
   <details class="add" id="connectBox">
@@ -227,16 +254,19 @@ function render() {
           <span class="label">${esc(l.label)}</span>
           ${l.note ? `<span class="note">${esc(l.note)}</span>` : ''}
         </a>`;
+      const btn = (act, sym, lab) => `<button class="act sm" type="button" data-act="${act}" data-g="${gi}" data-i="${l.i}" aria-label="${lab} ${esc(l.label)}">${sym}</button>`;
       return editMode
-        ? `<div class="row">${a}<button class="act" type="button" data-act="edit" data-g="${gi}" data-i="${l.i}" aria-label="Edit ${esc(l.label)}">✎</button><button class="act" type="button" data-act="del" data-g="${gi}" data-i="${l.i}" aria-label="Delete ${esc(l.label)}">×</button></div>`
+        ? `<div class="row">${a}${btn('edit','✎','Edit')}${btn('up','↑','Move up')}${btn('down','↓','Move down')}${btn('del','×','Delete')}</div>`
         : a;
     }).join('');
     out.push(`<section class="group" style="--gc:${color}">
-        <h2>${esc(g.name)}</h2>
+        <h2><span class="gname">${esc(g.name)}</span>${editMode ? `<span class="acts"><button class="gact" type="button" data-sact="edit" data-g="${gi}" aria-label="Edit section ${esc(g.name)}">✎</button><button class="gact" type="button" data-sact="up" data-g="${gi}" aria-label="Move section ${esc(g.name)} up">↑</button><button class="gact" type="button" data-sact="down" data-g="${gi}" aria-label="Move section ${esc(g.name)} down">↓</button></span>` : ''}</h2>
         ${body ? `<div class="links">${body}</div>` : '<p class="empty">No links yet.</p>'}
       </section>`);
   });
-  document.getElementById('groups').innerHTML = out.join('') || '<p class="empty">Nothing matches.</p>';
+  document.getElementById('groups').innerHTML =
+    (editMode ? '<button class="ghost" type="button" id="addSection">+ Add a section</button>' : '') +
+    (out.join('') || '<p class="empty">Nothing matches.</p>');
 }
 
 function fillGroupSelect(selected) {
@@ -280,13 +310,35 @@ document.getElementById('editToggle').addEventListener('click', e => {
   editMode = !editMode;
   e.target.classList.toggle('on', editMode);
   e.target.textContent = editMode ? 'Done' : 'Edit';
+  if (!editMode) closeSection();
   render();
 });
 
 document.getElementById('groups').addEventListener('click', async e => {
+  if (e.target.closest('#addSection')) { openSection(''); return; }
+  const sb = e.target.closest('.gact');
+  if (sb) {
+    const name = base.groups[+sb.dataset.g].name;
+    if (sb.dataset.sact === 'edit') { openSection(name); return; }
+    const dir = sb.dataset.sact === 'up' ? -1 : 1;
+    await runChange(data => {
+      const i = data.groups.findIndex(x => x.name === name);
+      swap(data.groups, i, i + dir);
+    }, 'Launchpad: move section ' + name);
+    return;
+  }
   const btn = e.target.closest('.act');
   if (!btn) return;
   const g = base.groups[+btn.dataset.g], i = +btn.dataset.i, link = g.links[i];
+  if (btn.dataset.act === 'up' || btn.dataset.act === 'down') {
+    const dir = btn.dataset.act === 'up' ? -1 : 1;
+    await runChange(data => {
+      const dg = data.groups.find(x => x.name === g.name); if (!dg) return;
+      const k = dg.links.findIndex(l => l.url === link.url);
+      swap(dg.links, k, k + dir);
+    }, 'Launchpad: move ' + link.label);
+    return;
+  }
   if (btn.dataset.act === 'edit') {
     editing = { group: g.name, url: link.url };
     document.getElementById('fLabel').value = link.label;
@@ -313,6 +365,87 @@ document.getElementById('groups').addEventListener('click', async e => {
     render();
   } catch (err) { st.textContent = 'Not saved'; st.className = 'status'; alert(err.message === 'auth' ? 'GitHub refused the key. Reconnect with a new key.' : 'Couldn’t save. Try again.'); }
 });
+
+
+const PALETTE = ['#C8592B','#8A5A2B','#2F6DAE','#3F8A4A','#6B4C9A','#1F7A6C','#B03A5B','#B8860B','#4A5A6A','#7A3E9D','#C0392B','#2E8B8B'];
+let sectionEditing = null; // name of section being edited, or '' for new
+let sColor = PALETTE[0];
+
+function drawSwatches() {
+  document.getElementById('swatches').innerHTML = PALETTE.map(c =>
+    `<button type="button" class="sw${c === sColor ? ' sel' : ''}" style="background:${c}" data-c="${c}" aria-label="Color ${c}"></button>`).join('');
+}
+document.getElementById('swatches').addEventListener('click', e => {
+  const b = e.target.closest('.sw'); if (!b) return; sColor = b.dataset.c; drawSwatches();
+});
+
+function openSection(name) {
+  sectionEditing = name;
+  const g = base.groups.find(x => x.name === name);
+  document.getElementById('sName').value = g ? g.name : '';
+  sColor = g ? (g.color || PALETTE[0]) : PALETTE.find(c => !base.groups.some(x => x.color === c)) || PALETTE[0];
+  drawSwatches();
+  document.getElementById('sectionSummary').textContent = g ? 'Edit section' : 'New section';
+  document.getElementById('sDelete').hidden = !g;
+  document.getElementById('smsg').textContent = '';
+  const box = document.getElementById('sectionBox'); box.hidden = false; box.open = true;
+  box.scrollIntoView({ behavior: 'smooth' });
+}
+function closeSection() {
+  sectionEditing = null;
+  const box = document.getElementById('sectionBox'); box.open = false; box.hidden = true;
+}
+document.getElementById('sCancel').addEventListener('click', closeSection);
+
+async function runChange(mutate, message) {
+  const st = document.getElementById('syncStatus');
+  st.textContent = 'Saving…'; st.className = 'status';
+  try {
+    await commitChange(mutate, message);
+    st.textContent = 'Synced'; st.className = 'status ok';
+    render(); fillGroupSelect();
+    return true;
+  } catch (err) {
+    st.textContent = 'Not saved'; st.className = 'status';
+    alert(err.message === 'auth' ? 'GitHub refused the key. Reconnect with a new key.'
+      : err.message === 'dup' ? 'There is already a section with that name.'
+      : 'Couldn\u2019t save. Try again.');
+    return false;
+  }
+}
+
+document.getElementById('sectionForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const name = document.getElementById('sName').value.trim();
+  if (!name) return;
+  const old = sectionEditing;
+  const ok = await runChange(data => {
+    if (data.groups.some(x => x.name.toLowerCase() === name.toLowerCase() && x.name !== old)) throw new Error('dup');
+    if (old) {
+      const g = data.groups.find(x => x.name === old);
+      if (g) { g.name = name; g.color = sColor; }
+    } else {
+      data.groups.push({ name, color: sColor, links: [] });
+    }
+  }, (old ? 'Launchpad: edit section ' : 'Launchpad: add section ') + name);
+  if (ok) closeSection();
+});
+
+document.getElementById('sDelete').addEventListener('click', async () => {
+  const name = sectionEditing;
+  const g = base.groups.find(x => x.name === name);
+  if (!g) return;
+  const n = (g.links || []).length;
+  if (!confirm(n ? `Delete "${name}" and its ${n} link${n === 1 ? '' : 's'} from every device?` : `Delete the "${name}" section?`)) return;
+  const ok = await runChange(data => {
+    const dg = data.groups.find(x => x.name === name);
+    if (dg) data.hidden = Array.from(new Set([...(data.hidden || []), ...dg.links.map(l => l.url)]));
+    data.groups = data.groups.filter(x => x.name !== name);
+  }, 'Launchpad: delete section ' + name);
+  if (ok) closeSection();
+});
+
+function swap(arr, i, j) { if (j < 0 || j >= arr.length) return false; [arr[i], arr[j]] = [arr[j], arr[i]]; return true; }
 
 document.getElementById('cancelEdit').addEventListener('click', resetForm);
 
