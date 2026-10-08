@@ -72,6 +72,24 @@
       ]
     },
     {
+      "name": "ZIP PROCESSING CHATS",
+      "color": "#C0392B",
+      "links": [
+        {
+          "label": "EXCEL ZIP DROP",
+          "url": "https://chatgpt.com/g/g-p-6aad770707308191a463a099d4ae5f81-bpd-repnet/c/6aaa3cab-26e0-83e8-b4c7-fb0452d5f6f3"
+        },
+        {
+          "label": "BRANDING APP ZIP DROP",
+          "url": "https://claude.ai/chat/5d051eff-0315-4c15-a282-1ee6bc5ef692"
+        },
+        {
+          "label": "DOC POLISH ZIP DROP",
+          "url": "https://chatgpt.com/g/g-p-6aad770707308191a463a099d4ae5f81-bpd-repnet/c/6a99df9a-b9c0-83e9-97ff-7a0a71191d14"
+        }
+      ]
+    },
+    {
       "name": "Finishes & documents",
       "color": "#3F8A4A",
       "links": [
@@ -89,24 +107,6 @@
           "label": "Document Polish",
           "url": "https://bpd-document-polish.tim721519.chatgpt.site/",
           "note": "Package a document and logo for formatting"
-        }
-      ]
-    },
-    {
-      "name": "ZIP PROCESSING CHATS",
-      "color": "#C0392B",
-      "links": [
-        {
-          "label": "EXCEL ZIP DROP",
-          "url": "https://chatgpt.com/g/g-p-6aad770707308191a463a099d4ae5f81-bpd-repnet/c/6aaa3cab-26e0-83e8-b4c7-fb0452d5f6f3"
-        },
-        {
-          "label": "BRANDING APP ZIP DROP",
-          "url": "https://claude.ai/chat/5d051eff-0315-4c15-a282-1ee6bc5ef692"
-        },
-        {
-          "label": "DOC POLISH ZIP DROP",
-          "url": "https://chatgpt.com/g/g-p-6aad770707308191a463a099d4ae5f81-bpd-repnet/c/6a99df9a-b9c0-83e9-97ff-7a0a71191d14"
         }
       ]
     },
