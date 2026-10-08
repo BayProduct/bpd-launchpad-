@@ -1,0 +1,137 @@
+{
+  "groups": [
+    {
+      "name": "Claude",
+      "color": "#C8592B",
+      "links": [
+        {
+          "label": "New chat",
+          "url": "https://claude.ai/new",
+          "note": "Blank chat, outside any project"
+        },
+        {
+          "label": "Customized Brochure Resources",
+          "url": "https://claude.ai/project/01a0ebac-530c-7372-8dd9-244cdddc9f48",
+          "note": "Project for brochure, rebrand and TITAN WALL work"
+        },
+        {
+          "label": "All projects",
+          "url": "https://claude.ai/projects"
+        },
+        {
+          "label": "Recent chats",
+          "url": "https://claude.ai/recents"
+        },
+        {
+          "label": "Behavioral Health Catalog mockup",
+          "url": "https://claude.ai/artifact/PBWcYsL3UeFXMcQBPt6FEp",
+          "note": "Claude design mockup"
+        }
+      ]
+    },
+    {
+      "name": "Brochures & catalogs",
+      "color": "#8A5A2B",
+      "links": [
+        {
+          "label": "Rebrand Job Ticket",
+          "url": "https://bayproduct.github.io/bpd-repnet-branding/",
+          "note": "Send brochures and price lists to rebrand as TITAN / bpd"
+        },
+        {
+          "label": "Catalog Order",
+          "url": "https://bayproduct.github.io/CUSTOMIZED_BROCHURE_NORMATIVE/",
+          "note": "Pick products and build a catalog ticket for Claude"
+        },
+        {
+          "label": "BPD Custom Catalogs",
+          "url": "https://bayproduct.github.io/CUSTOM_CATALOG_INDEX/",
+          "note": "Flip through sample catalogs"
+        }
+      ]
+    },
+    {
+      "name": "Price lists",
+      "color": "#2F6DAE",
+      "links": [
+        {
+          "label": "Price List Search",
+          "url": "https://bayproduct.github.io/bpd-repnet-landing-page/price-list-search/",
+          "note": "Search AIS and TITAN list prices"
+        },
+        {
+          "label": "List Price Adjuster",
+          "url": "https://bpd-list-price-adjuster.tim721519.chatgpt.site",
+          "note": "Replace, remove or recalculate prices in PDF price lists"
+        },
+        {
+          "label": "Excel Price List Extractor",
+          "url": "https://bpd-excel-price-list-extractor.tim721519.chatgpt.site/",
+          "note": "Package a price list for extraction"
+        }
+      ]
+    },
+    {
+      "name": "Finishes & documents",
+      "color": "#3F8A4A",
+      "links": [
+        {
+          "label": "AIS Finish Legend Generator",
+          "url": "https://ais-finish-legend-generator.tim721519.chatgpt.site/",
+          "note": "Finish legends from AIS reports"
+        },
+        {
+          "label": "TITAN ORIGIN Finish Legend Generator",
+          "url": "https://bayproduct.github.io/bpd-repnet-finishreports-titan-origin/",
+          "note": "Spec report in, PDF finish legend with swatches out"
+        },
+        {
+          "label": "Document Polish",
+          "url": "https://bpd-document-polish.tim721519.chatgpt.site/",
+          "note": "Package a document and logo for formatting"
+        }
+      ]
+    },
+    {
+      "name": "REPNET & personal",
+      "color": "#6B4C9A",
+      "links": [
+        {
+          "label": "REPNET home",
+          "url": "https://bayproduct.github.io/bpd-repnet-landing-page/",
+          "note": "Team landing page"
+        },
+        {
+          "label": "Today's Priorities",
+          "url": "https://bayproduct.github.io/TODAYS-PRIORITIES/",
+          "note": "Daily task list"
+        },
+        {
+          "label": "T-Hub",
+          "url": "https://bayproduct.github.io/T-Hub/",
+          "note": "Travel command center"
+        },
+        {
+          "label": "My GitHub repos",
+          "url": "https://github.com/BayProduct?tab=repositories"
+        }
+      ]
+    },
+    {
+      "name": "ChatGPT",
+      "color": "#1F7A6C",
+      "links": [
+        {
+          "label": "ChatGPT Launchpad",
+          "url": "https://bpd-chatgpt-launchpad.tim721519.chatgpt.site/",
+          "note": "Your ChatGPT chats, projects and tools"
+        },
+        {
+          "label": "New ChatGPT chat",
+          "url": "https://chatgpt.com/",
+          "note": "Opens ChatGPT"
+        }
+      ]
+    }
+  ]
+}

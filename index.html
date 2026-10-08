@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>bpd Launchpad</title>
+<meta name="theme-color" content="#141210">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #141210;
+    --card: #221D1A;
+    --ink: #F1EAE0;
+    --muted: #B3A797;
+    --line: #3A322D;
+    --accent: #D2A574;
+    --field: #1C1815;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    padding: max(16px, env(safe-area-inset-top)) 16px 48px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  @media (min-width: 900px) {
+    .wrap { max-width: 1180px; }
+    #groups { columns: 3 340px; column-gap: 16px; }
+    .group { break-inside: avoid; }
+    #search, details.add { max-width: 640px; }
+  }
+  header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 4px 0 14px; }
+  h1 { font-size: 22px; margin: 0; letter-spacing: .2px; }
+  h1 span { color: var(--accent); }
+  .updated { color: var(--muted); font-size: 12px; }
+  #search {
+    width: 100%; padding: 12px 14px; font-size: 16px;
+    border: 1px solid var(--line); border-radius: 12px;
+    background: var(--field); color: var(--ink); margin-bottom: 16px;
+  }
+  .group { background: var(--gc, var(--accent)); border-radius: 16px; margin-bottom: 14px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,.12); }
+  .group h2 {
+    margin: 0; font-size: 15px; text-transform: uppercase; letter-spacing: 1.2px;
+    padding: 14px 16px 10px; color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,.2);
+  }
+  .links { display: grid; gap: 8px; padding: 0 10px 12px; }
+  a.link {
+    display: block; text-decoration: none; color: #fff;
+    padding: 14px; border-radius: 12px; border: 0;
+    background: rgba(12,10,9,.42);
+  }
+  a.link:active { transform: scale(.99); opacity: .85; }
+  @media (hover: hover) { a.link:hover { background: rgba(12,10,9,.58); } }
+  a.link .label { font-weight: 650; font-size: 17px; display: block; }
+  a.link .note { color: rgba(255,255,255,.78); font-size: 13px; display: block; margin-top: 2px; }
+  .tag { white-space: nowrap; display: inline-block; font-size: 11px; color: rgba(255,255,255,.85); border: 1px solid rgba(255,255,255,.4); border-radius: 6px; padding: 1px 6px; margin-left: 6px; font-weight: 500; vertical-align: 2px; }
+  .empty { color: rgba(255,255,255,.85); font-size: 14px; padding: 2px 14px 14px; margin: 0; }
+  .row { display: flex; gap: 8px; align-items: stretch; }
+  .row a.link { flex: 1; }
+  .del { border: 0; background: rgba(12,10,9,.42); color: #fff; border-radius: 12px; padding: 0 12px; font-size: 18px; }
+  details.add { background: var(--card); border: 1px dashed var(--line); border-radius: 16px; padding: 12px 14px; margin-top: 20px; }
+  details.add summary { cursor: pointer; font-weight: 650; color: var(--accent); }
+  form { display: grid; gap: 10px; margin-top: 12px; }
+  label { font-size: 13px; color: var(--muted); display: grid; gap: 4px; }
+  input, select {
+    font-size: 16px; padding: 10px 12px; border-radius: 10px;
+    border: 1px solid var(--line); background: var(--field); color: var(--ink); width: 100%;
+  }
+  button.primary { background: var(--accent); color: #1E1A17; border: 0; border-radius: 10px; padding: 12px; font-size: 16px; font-weight: 650; }
+  button.ghost { background: transparent; color: var(--accent); border: 1px solid var(--line); border-radius: 10px; padding: 10px; font-size: 14px; }
+  .help { color: var(--muted); font-size: 13px; margin: 8px 0 0; }
+  #msg { color: var(--accent); font-size: 13px; min-height: 1em; margin: 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1><span>bpd</span> Launchpad</h1>
+    <div class="updated" id="updated"></div>
+  </header>
+
+  <input id="search" type="search" placeholder="Find a project or chat…" autocomplete="off" aria-label="Search links">
+
+  <main id="groups"><p class="empty">Loading…</p></main>
+
+  <details class="add">
+    <summary>+ Add a link on this device</summary>
+    <form id="addForm">
+      <label>Name
+        <input id="fLabel" required maxlength="80" placeholder="Brochures – TITAN WALL">
+      </label>
+      <label>Link
+        <input id="fUrl" required type="url" inputmode="url" placeholder="https://claude.ai/project/…">
+      </label>
+      <label>Group
+        <select id="fGroup"></select>
+      </label>
+      <button class="primary" type="submit">Add button</button>
+      <p id="msg" role="status"></p>
+    </form>
+    <p class="help">Links added here are saved only on this phone or computer. To put them on every device, tap below and paste the copied text into a Claude chat — Claude will add them to the launchpad for good.</p>
+    <p style="margin:10px 0 0"><button class="ghost" type="button" id="copyBtn">Copy my added links for Claude</button></p>
+  </details>
+</div>
+
+<script>
+const KEY = 'bpd-launchpad-local';
+let base = { groups: [] };
+
+function loadLocal() {
+  try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; }
+}
+function saveLocal(list) {
+  try { localStorage.setItem(KEY, JSON.stringify(list)); return true; } catch { return false; }
+}
+function safeUrl(u) {
+  try { const p = new URL(u); return (p.protocol === 'https:' || p.protocol === 'http:') ? p.href : ''; } catch { return ''; }
+}
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+function render() {
+  const q = document.getElementById('search').value.trim().toLowerCase();
+  const local = loadLocal();
+  const out = [];
+  base.groups.forEach(g => {
+    const items = [
+      ...(g.links || []).map(l => ({ ...l, local: false })),
+      ...local.map((l, i) => ({ ...l, local: true, idx: i })).filter(l => l.group === g.name)
+    ].filter(l => !q || (l.label + ' ' + (l.note || '') + ' ' + g.name).toLowerCase().includes(q));
+    if (q && !items.length) return;
+    const color = esc(g.color || 'var(--accent)');
+    const body = items.length
+      ? items.map(l => {
+          const href = safeUrl(l.url);
+          if (!href) return '';
+          const a = `<a class="link" href="${esc(href)}" target="_blank" rel="noopener">
+              <span class="label">${esc(l.label)}${l.local ? '<span class="tag">this device</span>' : ''}</span>
+              ${l.note ? `<span class="note">${esc(l.note)}</span>` : ''}
+            </a>`;
+          return l.local
+            ? `<div class="row">${a}<button class="del" type="button" aria-label="Remove ${esc(l.label)}" data-idx="${l.idx}">×</button></div>`
+            : a;
+        }).join('')
+      : '';
+    out.push(`<section class="group" style="--gc:${color}">
+        <h2>${esc(g.name)}</h2>
+        ${body ? `<div class="links">${body}</div>` : '<p class="empty">No links yet.</p>'}
+      </section>`);
+  });
+  document.getElementById('groups').innerHTML = out.join('') || '<p class="empty">Nothing matches.</p>';
+}
+
+function fillGroupSelect() {
+  document.getElementById('fGroup').innerHTML =
+    base.groups.map(g => `<option>${esc(g.name)}</option>`).join('');
+}
+
+document.getElementById('groups').addEventListener('click', e => {
+  const btn = e.target.closest('.del');
+  if (!btn) return;
+  const list = loadLocal();
+  list.splice(Number(btn.dataset.idx), 1);
+  saveLocal(list);
+  render();
+});
+
+document.getElementById('search').addEventListener('input', render);
+
+document.getElementById('addForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const label = document.getElementById('fLabel').value.trim();
+  const url = safeUrl(document.getElementById('fUrl').value.trim());
+  const group = document.getElementById('fGroup').value;
+  const msg = document.getElementById('msg');
+  if (!url) { msg.textContent = 'That link doesn’t look right — it should start with https://'; return; }
+  const list = loadLocal();
+  list.push({ label, url, group });
+  msg.textContent = saveLocal(list) ? 'Added.' : 'Couldn’t save on this device.';
+  e.target.reset();
+  render();
+});
+
+document.getElementById('copyBtn').addEventListener('click', async () => {
+  const list = loadLocal();
+  const msg = document.getElementById('msg');
+  if (!list.length) { msg.textContent = 'No added links to copy yet.'; return; }
+  const text = 'Please add these to my launchpad permanently:\n' +
+    list.map(l => `- ${l.group}: ${l.label} — ${l.url}`).join('\n');
+  try { await navigator.clipboard.writeText(text); msg.textContent = 'Copied — paste it into a Claude chat.'; }
+  catch { prompt('Copy this text:', text); }
+});
+
+fetch('links.json', { cache: 'no-store' })
+  .then(r => r.json())
+  .then(data => {
+    base = data;
+    fillGroupSelect();
+    render();
+  })
+  .catch(() => {
+    document.getElementById('groups').innerHTML = '<p class="empty">Couldn’t load the link list. Check your connection and reload.</p>';
+  });
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
