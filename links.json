@@ -111,22 +111,6 @@
       ]
     },
     {
-      "name": "ChatGPT",
-      "color": "#1F7A6C",
-      "links": [
-        {
-          "label": "ChatGPT Launchpad",
-          "url": "https://bpd-chatgpt-launchpad.tim721519.chatgpt.site/",
-          "note": "Your ChatGPT chats, projects and tools"
-        },
-        {
-          "label": "New ChatGPT chat",
-          "url": "https://chatgpt.com/",
-          "note": "Opens ChatGPT"
-        }
-      ]
-    },
-    {
       "name": "REPNET & personal",
       "color": "#6B4C9A",
       "links": [
@@ -148,6 +132,22 @@
         {
           "label": "My GitHub repos",
           "url": "https://github.com/BayProduct?tab=repositories"
+        }
+      ]
+    },
+    {
+      "name": "ChatGPT",
+      "color": "#1F7A6C",
+      "links": [
+        {
+          "label": "ChatGPT Launchpad",
+          "url": "https://bpd-chatgpt-launchpad.tim721519.chatgpt.site/",
+          "note": "Your ChatGPT chats, projects and tools"
+        },
+        {
+          "label": "New ChatGPT chat",
+          "url": "https://chatgpt.com/",
+          "note": "Opens ChatGPT"
         }
       ]
     }
