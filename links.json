@@ -132,6 +132,11 @@
           "note": "Opens ChatGPT"
         }
       ]
+    },
+    {
+      "name": "ZIP PROCESSING CHATS",
+      "color": "#C0392B",
+      "links": []
     }
   ]
 }
