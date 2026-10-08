@@ -306,6 +306,8 @@ document.getElementById('groups').addEventListener('click', async e => {
     await commitChange(data => {
       const dg = data.groups.find(x => x.name === g.name);
       if (dg) dg.links = dg.links.filter(l => l.url !== link.url);
+      // remember deletions so the automatic refresh doesn't add them back
+      data.hidden = Array.from(new Set([...(data.hidden || []), link.url]));
     }, 'Launchpad: delete ' + link.label);
     st.textContent = 'Synced'; st.className = 'status ok';
     render();
