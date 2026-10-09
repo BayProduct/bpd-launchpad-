@@ -19,6 +19,11 @@
       ]
     },
     {
+      "name": "NEW BROCHURES",
+      "color": "#1d2b2e",
+      "links": []
+    },
+    {
       "name": "Claude",
       "color": "#9a6749",
       "links": [
@@ -46,11 +51,6 @@
           "note": "Claude design mockup"
         }
       ]
-    },
-    {
-      "name": "NEW BROCHURES",
-      "color": "#1d2b2e",
-      "links": []
     },
     {
       "name": "Brochures & catalogs",
