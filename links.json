@@ -90,6 +90,11 @@
       ]
     },
     {
+      "name": "NEW BROCHURES",
+      "color": "#1d2b2e",
+      "links": []
+    },
+    {
       "name": "Finishes & documents",
       "color": "#6f8068",
       "links": [
@@ -109,11 +114,6 @@
           "note": "Package a document and logo for formatting"
         }
       ]
-    },
-    {
-      "name": "NEW BROCHURES",
-      "color": "#1d2b2e",
-      "links": []
     },
     {
       "name": "REPNET & personal",
