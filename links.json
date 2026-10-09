@@ -141,6 +141,11 @@
       ]
     },
     {
+      "name": "WEB BUILDING",
+      "color": "#ad9a6e",
+      "links": []
+    },
+    {
       "name": "ChatGPT",
       "color": "#435846",
       "links": [
@@ -155,11 +160,6 @@
           "note": "Opens ChatGPT"
         }
       ]
-    },
-    {
-      "name": "WEB BUILDING",
-      "color": "#ad9a6e",
-      "links": []
     }
   ]
 }
