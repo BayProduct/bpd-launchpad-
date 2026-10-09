@@ -95,6 +95,11 @@
       ]
     },
     {
+      "name": "WEB BUILDING",
+      "color": "#ad9a6e",
+      "links": []
+    },
+    {
       "name": "Finishes & documents",
       "color": "#6f8068",
       "links": [
@@ -114,11 +119,6 @@
           "note": "Package a document and logo for formatting"
         }
       ]
-    },
-    {
-      "name": "WEB BUILDING",
-      "color": "#ad9a6e",
-      "links": []
     },
     {
       "name": "REPNET & personal",
