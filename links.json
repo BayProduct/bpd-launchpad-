@@ -53,6 +53,11 @@
       ]
     },
     {
+      "name": "WEB BUILDING",
+      "color": "#ad9a6e",
+      "links": []
+    },
+    {
       "name": "Brochures & catalogs",
       "color": "#d9c9ad",
       "links": [
@@ -72,11 +77,6 @@
           "note": "Flip through sample catalogs"
         }
       ]
-    },
-    {
-      "name": "WEB BUILDING",
-      "color": "#ad9a6e",
-      "links": []
     },
     {
       "name": "Price lists",
