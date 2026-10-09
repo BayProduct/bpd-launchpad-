@@ -116,6 +116,11 @@
       ]
     },
     {
+      "name": "WEB BUILDING",
+      "color": "#ad9a6e",
+      "links": []
+    },
+    {
       "name": "REPNET & personal",
       "color": "#7b8083",
       "links": [
@@ -139,11 +144,6 @@
           "url": "https://github.com/BayProduct?tab=repositories"
         }
       ]
-    },
-    {
-      "name": "WEB BUILDING",
-      "color": "#ad9a6e",
-      "links": []
     },
     {
       "name": "ChatGPT",
