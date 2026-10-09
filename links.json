@@ -29,6 +29,27 @@
       "links": []
     },
     {
+      "name": "Brochures & catalogs",
+      "color": "#d9c9ad",
+      "links": [
+        {
+          "label": "Rebrand Job Ticket",
+          "url": "https://bayproduct.github.io/bpd-repnet-branding/",
+          "note": "Send brochures and price lists to rebrand as TITAN / bpd"
+        },
+        {
+          "label": "Catalog Order",
+          "url": "https://bayproduct.github.io/CUSTOMIZED_BROCHURE_NORMATIVE/",
+          "note": "Pick products and build a catalog ticket for Claude"
+        },
+        {
+          "label": "BPD Custom Catalogs",
+          "url": "https://bayproduct.github.io/CUSTOM_CATALOG_INDEX/",
+          "note": "Flip through sample catalogs"
+        }
+      ]
+    },
+    {
       "name": "Claude",
       "color": "#9a6749",
       "links": [
@@ -54,27 +75,6 @@
           "label": "Behavioral Health Catalog mockup",
           "url": "https://claude.ai/artifact/PBWcYsL3UeFXMcQBPt6FEp",
           "note": "Claude design mockup"
-        }
-      ]
-    },
-    {
-      "name": "Brochures & catalogs",
-      "color": "#d9c9ad",
-      "links": [
-        {
-          "label": "Rebrand Job Ticket",
-          "url": "https://bayproduct.github.io/bpd-repnet-branding/",
-          "note": "Send brochures and price lists to rebrand as TITAN / bpd"
-        },
-        {
-          "label": "Catalog Order",
-          "url": "https://bayproduct.github.io/CUSTOMIZED_BROCHURE_NORMATIVE/",
-          "note": "Pick products and build a catalog ticket for Claude"
-        },
-        {
-          "label": "BPD Custom Catalogs",
-          "url": "https://bayproduct.github.io/CUSTOM_CATALOG_INDEX/",
-          "note": "Flip through sample catalogs"
         }
       ]
     },
