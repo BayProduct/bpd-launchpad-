@@ -35,8 +35,8 @@
     .group { break-inside: avoid; }
     #search, details.add { max-width: 640px; }
   }
-  header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 4px 0 14px; }
-  h1 { font-size: 22px; margin: 0; letter-spacing: .2px; }
+  header { display: flex; align-items: center; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin: 4px 0 14px; }
+  h1 { font-size: 22px; margin: 0; letter-spacing: .2px; white-space: nowrap; }
   h1 span { color: var(--accent); }
   .updated { color: var(--muted); font-size: 12px; }
   #search {
@@ -79,7 +79,7 @@
   .row { display: flex; gap: 8px; align-items: stretch; }
   .row a.link { flex: 1; min-width: 0; }
   .act { border: 0; background: rgba(12,10,9,.42); color: #fff; border-radius: 12px; padding: 0 14px; font-size: 18px; cursor: pointer; }
-  .hdr-btns { display: flex; gap: 8px; align-items: center; }
+  .hdr-btns { display: flex; gap: 6px; align-items: center; }
   .chip { background: transparent; color: var(--accent); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; font-size: 13px; cursor: pointer; }
   .chip.on { background: var(--accent); color: #1E1A17; border-color: var(--accent); }
   .status { font-size: 12px; color: var(--muted); }
@@ -105,6 +105,22 @@
   .sw.sel { border-color: #fff; box-shadow: 0 0 0 2px var(--accent); }
   #addSection { margin: 0 0 14px; width: 100%; }
   .danger { color: #FF8A80 !important; border-color: #6A3A36 !important; }
+  .icon-btn { background: transparent; color: var(--ink); border: 1px solid var(--line); border-radius: 999px; width: 34px; height: 34px; font-size: 17px; line-height: 1; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0; }
+  .icon-btn[hidden] { display: none; }
+  .icon-btn:disabled { opacity: .35; cursor: default; }
+  .icon-btn.spin { animation: lpspin .8s linear infinite; }
+  @keyframes lpspin { to { transform: rotate(360deg); } }
+  .group h2 .gname { cursor: pointer; }
+  .gadd { border: 0; background: rgba(12,10,9,.35); color: #fff; border-radius: 8px; padding: 2px 10px; font-size: 16px; font-weight: 700; cursor: pointer; }
+  .group.light .gadd { background: rgba(255,255,255,.55); color: #39413b; }
+  .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: flex; align-items: flex-start; justify-content: center; padding: max(24px, env(safe-area-inset-top)) 16px 24px; z-index: 50; overflow-y: auto; }
+  .modal-back[hidden] { display: none; }
+  .modal { width: 100%; max-width: 560px; }
+  .modal .group { margin: 0; }
+  .modal-close { border: 0; background: rgba(12,10,9,.35); color: #fff; border-radius: 8px; padding: 2px 10px; font-size: 18px; cursor: pointer; }
+  .group.light .modal-close { background: rgba(255,255,255,.55); color: #39413b; }
+  .modal .add-here { display: block; width: calc(100% - 20px); margin: 0 10px 12px; }
+  .make-changes { display: block; text-align: center; margin: 20px 0 0; padding: 14px; border-radius: 12px; border: 1px solid var(--line); color: var(--ink); text-decoration: none; font-weight: 650; background: var(--card); }
 </style>
 </head>
 <body>
@@ -113,6 +129,8 @@
     <h1><span>bpd</span> Launchpad</h1>
     <div class="hdr-btns">
       <span class="status" id="syncStatus"></span>
+      <button class="icon-btn" type="button" id="undoBtn" title="Undo last change" aria-label="Undo last change" hidden disabled>↶</button>
+      <button class="icon-btn" type="button" id="refreshBtn" title="Refresh" aria-label="Refresh">⟳</button>
       <button class="chip" type="button" id="editToggle" hidden>Edit</button>
     </div>
   </header>
@@ -188,6 +206,12 @@
       <p style="margin:10px 0 0"><button class="ghost" type="button" id="disconnectBtn">Disconnect this device</button></p>
     </div>
   </details>
+
+  <a class="make-changes" href="https://claude.ai/code/session_01FZeHFs7tsnimnGRbpWuuwB" target="_blank" rel="noopener">✎ Make changes</a>
+</div>
+
+<div class="modal-back" id="modalBack" hidden>
+  <div class="modal" id="modal" role="dialog" aria-modal="true"></div>
 </div>
 
 <script>
@@ -227,16 +251,23 @@ async function apiGet() {
 }
 
 // Apply a change to the latest copy on GitHub and save it; retries once if another save happened first.
-async function commitChange(mutate, message) {
+const undoStack = [];
+async function commitChange(mutate, message, isUndo) {
   for (let attempt = 0; attempt < 2; attempt++) {
     const { data, sha } = await apiGet();
+    const before = JSON.stringify(data);
     mutate(data);
     const r = await fetch(API, {
       method: 'PUT',
       headers: { Authorization: 'Bearer ' + getToken(), Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
       body: JSON.stringify({ message, content: b64encode(JSON.stringify(data, null, 2) + '\n'), sha, branch: 'main' })
     });
-    if (r.ok) { base = data; return; }
+    if (r.ok) {
+      base = data;
+      if (!isUndo) { undoStack.push({ snap: before, label: message.replace(/^Launchpad: /, '') }); if (undoStack.length > 20) undoStack.shift(); }
+      updateUndo();
+      return;
+    }
     if (r.status === 409 || r.status === 422) continue;
     if (r.status === 401 || r.status === 403 || r.status === 404) throw new Error('auth');
     throw new Error('net');
@@ -265,7 +296,7 @@ function render() {
         : a;
     }).join('');
     out.push(`<section class="group${isLight(g.color) ? ' light' : ''}" style="--gc:${color}">
-        <h2><span class="gname">${esc(g.name)}</span>${editMode ? `<span class="acts"><button class="gact" type="button" data-sact="edit" data-g="${gi}" aria-label="Edit section ${esc(g.name)}">✎</button><button class="gact" type="button" data-sact="up" data-g="${gi}" aria-label="Move section ${esc(g.name)} up">↑</button><button class="gact" type="button" data-sact="down" data-g="${gi}" aria-label="Move section ${esc(g.name)} down">↓</button></span>` : ''}</h2>
+        <h2><span class="gname" data-open="${gi}" role="button" tabindex="0" title="Open ${esc(g.name)}">${esc(g.name)}</span>${getToken() && !editMode ? `<button class="gadd" type="button" data-addto="${gi}" aria-label="Add to ${esc(g.name)}">+</button>` : ''}${editMode ? `<span class="acts"><button class="gact" type="button" data-sact="edit" data-g="${gi}" aria-label="Edit section ${esc(g.name)}">✎</button><button class="gact" type="button" data-sact="up" data-g="${gi}" aria-label="Move section ${esc(g.name)} up">↑</button><button class="gact" type="button" data-sact="down" data-g="${gi}" aria-label="Move section ${esc(g.name)} down">↓</button></span>` : ''}</h2>
         ${body ? `<div class="links">${body}</div>` : '<p class="empty">No links yet.</p>'}
       </section>`);
   });
@@ -290,6 +321,7 @@ function refreshConnectUI() {
   const on = !!getToken();
   document.getElementById('connectBody').hidden = on;
   document.getElementById('connectedBody').hidden = !on;
+  if (typeof updateUndo === 'function') updateUndo();
   document.getElementById('connectSummary').textContent = on ? 'GitHub connected on this device' : 'Connect GitHub (one time per device)';
   document.getElementById('editToggle').hidden = !on;
   document.getElementById('addBox').hidden = !on;
@@ -521,6 +553,83 @@ document.getElementById('disconnectBtn').addEventListener('click', () => {
   setToken(''); refreshConnectUI(); render();
 });
 
+function updateUndo() {
+  const b = document.getElementById('undoBtn');
+  b.hidden = !getToken();
+  b.disabled = !undoStack.length;
+  b.title = undoStack.length ? 'Undo: ' + undoStack[undoStack.length - 1].label : 'Nothing to undo';
+}
+
+document.getElementById('undoBtn').addEventListener('click', async () => {
+  const last = undoStack[undoStack.length - 1];
+  if (!last || !confirm('Undo "' + last.label + '"?')) return;
+  const st = document.getElementById('syncStatus');
+  st.textContent = 'Undoing…'; st.className = 'status';
+  try {
+    await commitChange(data => {
+      Object.keys(data).forEach(k => delete data[k]);
+      Object.assign(data, JSON.parse(last.snap));
+    }, 'Launchpad: undo ' + last.label, true);
+    undoStack.pop(); updateUndo();
+    st.textContent = 'Synced'; st.className = 'status ok';
+    render(); fillGroupSelect();
+  } catch (err) { st.textContent = 'Not saved'; st.className = 'status'; alert('Couldn\u2019t undo. Try again.'); }
+});
+
+document.getElementById('refreshBtn').addEventListener('click', async e => {
+  const b = e.currentTarget; b.classList.add('spin');
+  try { await load(); } finally { setTimeout(() => b.classList.remove('spin'), 300); }
+});
+
+function addToSection(name) {
+  closeModal();
+  if (editing) resetForm();
+  fillGroupSelect(name);
+  const box = document.getElementById('addBox'); box.open = true;
+  box.scrollIntoView({ behavior: 'smooth' });
+  setTimeout(() => document.getElementById('fLabel').focus({ preventScroll: true }), 350);
+}
+
+function openModal(gi) {
+  const g = base.groups[gi]; if (!g) return;
+  const color = esc(g.color || 'var(--accent)');
+  const items = (g.links || []).map(l => {
+    const href = safeUrl(l.url); if (!href) return '';
+    return `<a class="link" href="${esc(href)}" target="_blank" rel="noopener">
+        <span class="label">${esc(l.label)}</span>
+        ${l.note ? `<span class="note">${esc(l.note)}</span>` : ''}
+      </a>`;
+  }).join('');
+  document.getElementById('modal').innerHTML = `<section class="group${isLight(g.color) ? ' light' : ''}" style="--gc:${color}">
+      <h2><span style="flex:1">${esc(g.name)} · ${(g.links || []).length}</span><button class="modal-close" type="button" id="modalClose" aria-label="Close">×</button></h2>
+      ${items ? `<div class="links">${items}</div>` : '<p class="empty">No links yet.</p>'}
+      ${getToken() ? `<button class="primary add-here" type="button" data-addto="${gi}">+ Add to ${esc(g.name)}</button>` : ''}
+    </section>`;
+  document.getElementById('modalBack').hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('modalBack').hidden = true;
+  document.body.style.overflow = '';
+}
+document.getElementById('modalBack').addEventListener('click', e => {
+  if (e.target.id === 'modalBack' || e.target.closest('#modalClose')) { closeModal(); return; }
+  const add = e.target.closest('[data-addto]');
+  if (add) addToSection(base.groups[+add.dataset.addto].name);
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+document.getElementById('groups').addEventListener('click', e => {
+  const add = e.target.closest('.gadd');
+  if (add) { addToSection(base.groups[+add.dataset.addto].name); return; }
+  const open = e.target.closest('[data-open]');
+  if (open) openModal(+open.dataset.open);
+}, true);
+document.getElementById('groups').addEventListener('keydown', e => {
+  const open = e.target.closest('[data-open]');
+  if (open && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openModal(+open.dataset.open); }
+});
+
 async function load() {
   // Connected devices read the live copy straight from GitHub; others use the published page.
   if (getToken()) {
@@ -536,6 +645,7 @@ async function load() {
 }
 
 refreshConnectUI();
+updateUndo();
 load();
 document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
 
