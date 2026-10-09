@@ -4,27 +4,27 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>bpd Launchpad</title>
-<meta name="theme-color" content="#141210">
+<meta name="theme-color" content="#303538">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
   :root {
     color-scheme: dark;
-    --bg: #141210;
-    --card: #221D1A;
-    --ink: #F1EAE0;
-    --muted: #B3A797;
-    --line: #3A322D;
-    --accent: #D2A574;
-    --field: #1C1815;
+    --bg: #303538;
+    --card: #3a4044;
+    --ink: #eef1ee;
+    --muted: #b7bdb6;
+    --line: #4a5155;
+    --accent: #84bd00;
+    --field: #2a2f32;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
   body {
     background: var(--bg);
     color: var(--ink);
-    font: 16px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font: 16px/1.4 "Dubai", "Dubai Medium", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     padding: max(16px, env(safe-area-inset-top)) 16px 48px;
     -webkit-tap-highlight-color: transparent;
   }
@@ -92,6 +92,11 @@
   a.inl { color: var(--accent); }
   .group h2 { display: flex; align-items: center; gap: 6px; }
   .group h2 .gname { flex: 1; }
+  .group.light h2 { color: #39413b; text-shadow: none; }
+  .group.light a.link { background: rgba(255,255,255,.55); color: #39413b; }
+  .group.light a.link .note { color: #565d57; }
+  .group.light .act, .group.light .gact { background: rgba(255,255,255,.55); color: #39413b; }
+  .group.light .empty { color: #565d57; }
   .gact { border: 0; background: rgba(12,10,9,.35); color: #fff; border-radius: 8px; padding: 4px 10px; font-size: 14px; cursor: pointer; }
   .acts { display: flex; gap: 6px; }
   .act.sm { padding: 0 10px; font-size: 15px; }
@@ -259,7 +264,7 @@ function render() {
         ? `<div class="row">${a}${btn('edit','✎','Edit')}${btn('up','↑','Move up')}${btn('down','↓','Move down')}${btn('del','×','Delete')}</div>`
         : a;
     }).join('');
-    out.push(`<section class="group" style="--gc:${color}">
+    out.push(`<section class="group${isLight(g.color) ? ' light' : ''}" style="--gc:${color}">
         <h2><span class="gname">${esc(g.name)}</span>${editMode ? `<span class="acts"><button class="gact" type="button" data-sact="edit" data-g="${gi}" aria-label="Edit section ${esc(g.name)}">✎</button><button class="gact" type="button" data-sact="up" data-g="${gi}" aria-label="Move section ${esc(g.name)} up">↑</button><button class="gact" type="button" data-sact="down" data-g="${gi}" aria-label="Move section ${esc(g.name)} down">↓</button></span>` : ''}</h2>
         ${body ? `<div class="links">${body}</div>` : '<p class="empty">No links yet.</p>'}
       </section>`);
@@ -267,6 +272,12 @@ function render() {
   document.getElementById('groups').innerHTML =
     (editMode ? '<button class="ghost" type="button" id="addSection">+ Add a section</button>' : '') +
     (out.join('') || '<p class="empty">Nothing matches.</p>');
+}
+
+function isLight(hex) {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex || ''); if (!m) return false;
+  const n = parseInt(m[1], 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+  return (0.299 * r + 0.587 * g + 0.114 * b) > 170;
 }
 
 function fillGroupSelect(selected) {
@@ -367,7 +378,7 @@ document.getElementById('groups').addEventListener('click', async e => {
 });
 
 
-const PALETTE = ['#C8592B','#8A5A2B','#2F6DAE','#3F8A4A','#6B4C9A','#1F7A6C','#B03A5B','#B8860B','#4A5A6A','#7A3E9D','#C0392B','#2E8B8B'];
+const PALETTE = ['#9a6749','#d9c9ad','#667f98','#6f8068','#7b8083','#435846','#9a765f','#1d2b2e','#857a96','#a0807a','#5f7f7a','#ad9a6e'];
 let sectionEditing = null; // name of section being edited, or '' for new
 let sColor = PALETTE[0];
 

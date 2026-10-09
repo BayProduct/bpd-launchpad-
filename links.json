@@ -2,7 +2,7 @@
   "groups": [
     {
       "name": "ZIP PROCESSING CHATS",
-      "color": "#C0392B",
+      "color": "#857a96",
       "links": [
         {
           "label": "EXCEL ZIP DROP",
@@ -20,7 +20,7 @@
     },
     {
       "name": "Claude",
-      "color": "#C8592B",
+      "color": "#9a6749",
       "links": [
         {
           "label": "New chat",
@@ -49,7 +49,7 @@
     },
     {
       "name": "Brochures & catalogs",
-      "color": "#8A5A2B",
+      "color": "#d9c9ad",
       "links": [
         {
           "label": "Rebrand Job Ticket",
@@ -70,7 +70,7 @@
     },
     {
       "name": "Price lists",
-      "color": "#3F8A4A",
+      "color": "#667f98",
       "links": [
         {
           "label": "Price List Search",
@@ -91,7 +91,7 @@
     },
     {
       "name": "Finishes & documents",
-      "color": "#B8860B",
+      "color": "#6f8068",
       "links": [
         {
           "label": "AIS Finish Legend Generator",
@@ -112,7 +112,7 @@
     },
     {
       "name": "REPNET & personal",
-      "color": "#6B4C9A",
+      "color": "#7b8083",
       "links": [
         {
           "label": "REPNET home",
@@ -137,7 +137,7 @@
     },
     {
       "name": "ChatGPT",
-      "color": "#1F7A6C",
+      "color": "#435846",
       "links": [
         {
           "label": "ChatGPT Launchpad",
