@@ -21,7 +21,13 @@
     {
       "name": "NEW FINISHED BROCHURES",
       "color": "#1d2b2e",
-      "links": []
+      "links": [
+        {
+          "label": "NEW TITAN BROCHURES (Learning Center Link)",
+          "url": "https://airtable.com/applgHHT3oqlVA4nw/tblsekahFhVDU8KrY/viwr2wJvVk6R0G1Td/recjK5DoDUpVeD7TA?blocks=hide",
+          "note": "these were built mostly during the UNICOR bid Process"
+        }
+      ]
     },
     {
       "name": "WEB BUILDING",
