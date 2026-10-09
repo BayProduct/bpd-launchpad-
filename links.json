@@ -150,6 +150,11 @@
           "note": "Opens ChatGPT"
         }
       ]
+    },
+    {
+      "name": "NEW BROCHURES",
+      "color": "#1d2b2e",
+      "links": []
     }
   ]
 }
