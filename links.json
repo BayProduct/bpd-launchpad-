@@ -155,6 +155,11 @@
           "note": "Opens ChatGPT"
         }
       ]
+    },
+    {
+      "name": "WEB BUILDING",
+      "color": "#ad9a6e",
+      "links": []
     }
   ]
 }
