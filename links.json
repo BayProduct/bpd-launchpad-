@@ -71,6 +71,27 @@
       ]
     },
     {
+      "name": "Finishes & documents",
+      "color": "#6f8068",
+      "links": [
+        {
+          "label": "AIS Finish Legend Generator",
+          "url": "https://ais-finish-legend-generator.tim721519.chatgpt.site/",
+          "note": "Finish legends from AIS reports"
+        },
+        {
+          "label": "TITAN ORIGIN Finish Legend Generator",
+          "url": "https://bayproduct.github.io/bpd-repnet-finishreports-titan-origin/",
+          "note": "Spec report in, PDF finish legend with swatches out"
+        },
+        {
+          "label": "Document Polish",
+          "url": "https://bpd-document-polish.tim721519.chatgpt.site/",
+          "note": "Package a document and logo for formatting"
+        }
+      ]
+    },
+    {
       "name": "Claude",
       "color": "#9a6749",
       "links": [
@@ -96,27 +117,6 @@
           "label": "Behavioral Health Catalog mockup",
           "url": "https://claude.ai/artifact/PBWcYsL3UeFXMcQBPt6FEp",
           "note": "Claude design mockup"
-        }
-      ]
-    },
-    {
-      "name": "Finishes & documents",
-      "color": "#6f8068",
-      "links": [
-        {
-          "label": "AIS Finish Legend Generator",
-          "url": "https://ais-finish-legend-generator.tim721519.chatgpt.site/",
-          "note": "Finish legends from AIS reports"
-        },
-        {
-          "label": "TITAN ORIGIN Finish Legend Generator",
-          "url": "https://bayproduct.github.io/bpd-repnet-finishreports-titan-origin/",
-          "note": "Spec report in, PDF finish legend with swatches out"
-        },
-        {
-          "label": "Document Polish",
-          "url": "https://bpd-document-polish.tim721519.chatgpt.site/",
-          "note": "Package a document and logo for formatting"
         }
       ]
     },
