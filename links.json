@@ -111,6 +111,11 @@
       ]
     },
     {
+      "name": "NEW BROCHURES",
+      "color": "#1d2b2e",
+      "links": []
+    },
+    {
       "name": "REPNET & personal",
       "color": "#7b8083",
       "links": [
@@ -134,11 +139,6 @@
           "url": "https://github.com/BayProduct?tab=repositories"
         }
       ]
-    },
-    {
-      "name": "NEW BROCHURES",
-      "color": "#1d2b2e",
-      "links": []
     },
     {
       "name": "ChatGPT",
