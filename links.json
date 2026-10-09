@@ -48,6 +48,11 @@
       ]
     },
     {
+      "name": "NEW BROCHURES",
+      "color": "#1d2b2e",
+      "links": []
+    },
+    {
       "name": "Brochures & catalogs",
       "color": "#d9c9ad",
       "links": [
@@ -67,11 +72,6 @@
           "note": "Flip through sample catalogs"
         }
       ]
-    },
-    {
-      "name": "NEW BROCHURES",
-      "color": "#1d2b2e",
-      "links": []
     },
     {
       "name": "Price lists",
