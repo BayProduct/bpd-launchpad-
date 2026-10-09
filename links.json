@@ -54,13 +54,13 @@
       "color": "#667f98",
       "links": [
         {
+          "label": "MASTER SEARCH PRICE LIST INDEXING CHAT",
+          "url": "https://chatgpt.com/g/g-p-6aad770707308191a463a099d4ae5f81-bpd-repnet/c/6ab2566e-8860-83e8-8886-5598dcbc7e32"
+        },
+        {
           "label": "Price List Search APP",
           "url": "https://bayproduct.github.io/bpd-repnet-landing-page/price-list-search/",
           "note": "Search AIS and TITAN list prices"
-        },
-        {
-          "label": "MASTER SEARCH PRICE LIST INDEXING CHAT",
-          "url": "https://chatgpt.com/g/g-p-6aad770707308191a463a099d4ae5f81-bpd-repnet/c/6ab2566e-8860-83e8-8886-5598dcbc7e32"
         },
         {
           "label": "List Price Adjuster",
