@@ -24,6 +24,11 @@
       "links": []
     },
     {
+      "name": "WEB BUILDING",
+      "color": "#ad9a6e",
+      "links": []
+    },
+    {
       "name": "Claude",
       "color": "#9a6749",
       "links": [
@@ -51,11 +56,6 @@
           "note": "Claude design mockup"
         }
       ]
-    },
-    {
-      "name": "WEB BUILDING",
-      "color": "#ad9a6e",
-      "links": []
     },
     {
       "name": "Brochures & catalogs",
