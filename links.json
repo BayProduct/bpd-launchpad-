@@ -69,6 +69,11 @@
       ]
     },
     {
+      "name": "NEW BROCHURES",
+      "color": "#1d2b2e",
+      "links": []
+    },
+    {
       "name": "Price lists",
       "color": "#667f98",
       "links": [
@@ -88,11 +93,6 @@
           "note": "Package a price list for extraction"
         }
       ]
-    },
-    {
-      "name": "NEW BROCHURES",
-      "color": "#1d2b2e",
-      "links": []
     },
     {
       "name": "Finishes & documents",
