@@ -74,6 +74,11 @@
       ]
     },
     {
+      "name": "WEB BUILDING",
+      "color": "#ad9a6e",
+      "links": []
+    },
+    {
       "name": "Price lists",
       "color": "#667f98",
       "links": [
@@ -93,11 +98,6 @@
           "note": "Package a price list for extraction"
         }
       ]
-    },
-    {
-      "name": "WEB BUILDING",
-      "color": "#ad9a6e",
-      "links": []
     },
     {
       "name": "Finishes & documents",
