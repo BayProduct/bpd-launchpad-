@@ -92,6 +92,31 @@
       ]
     },
     {
+      "name": "REPNET & personal",
+      "color": "#7b8083",
+      "links": [
+        {
+          "label": "REPNET home",
+          "url": "https://bayproduct.github.io/bpd-repnet-landing-page/",
+          "note": "Team landing page"
+        },
+        {
+          "label": "Today's Priorities",
+          "url": "https://bayproduct.github.io/TODAYS-PRIORITIES/",
+          "note": "Daily task list"
+        },
+        {
+          "label": "T-Hub",
+          "url": "https://bayproduct.github.io/T-Hub/",
+          "note": "Travel command center"
+        },
+        {
+          "label": "My GitHub repos",
+          "url": "https://github.com/BayProduct?tab=repositories"
+        }
+      ]
+    },
+    {
       "name": "Claude",
       "color": "#9a6749",
       "links": [
@@ -117,31 +142,6 @@
           "label": "Behavioral Health Catalog mockup",
           "url": "https://claude.ai/artifact/PBWcYsL3UeFXMcQBPt6FEp",
           "note": "Claude design mockup"
-        }
-      ]
-    },
-    {
-      "name": "REPNET & personal",
-      "color": "#7b8083",
-      "links": [
-        {
-          "label": "REPNET home",
-          "url": "https://bayproduct.github.io/bpd-repnet-landing-page/",
-          "note": "Team landing page"
-        },
-        {
-          "label": "Today's Priorities",
-          "url": "https://bayproduct.github.io/TODAYS-PRIORITIES/",
-          "note": "Daily task list"
-        },
-        {
-          "label": "T-Hub",
-          "url": "https://bayproduct.github.io/T-Hub/",
-          "note": "Travel command center"
-        },
-        {
-          "label": "My GitHub repos",
-          "url": "https://github.com/BayProduct?tab=repositories"
         }
       ]
     },
