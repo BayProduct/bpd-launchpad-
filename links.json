@@ -177,6 +177,10 @@
         {
           "label": "ORG: BPD REPNET",
           "url": "https://supabase.com/dashboard/org/wsirftyqtlbbsaxppivh"
+        },
+        {
+          "label": "Main page with all orgs",
+          "url": "https://supabase.com/dashboard/organizations"
         }
       ]
     }
