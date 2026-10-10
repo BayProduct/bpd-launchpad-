@@ -147,11 +147,6 @@
         {
           "label": "Recent chats",
           "url": "https://claude.ai/recents"
-        },
-        {
-          "label": "Behavioral Health Catalog mockup",
-          "url": "https://claude.ai/artifact/PBWcYsL3UeFXMcQBPt6FEp",
-          "note": "Claude design mockup"
         }
       ]
     },
@@ -171,5 +166,8 @@
         }
       ]
     }
+  ],
+  "hidden": [
+    "https://claude.ai/artifact/PBWcYsL3UeFXMcQBPt6FEp"
   ]
 }
