@@ -169,7 +169,12 @@
     {
       "name": "SUPABASE",
       "color": "#9a765f",
-      "links": []
+      "links": [
+        {
+          "label": "ORG: BPD REPNET",
+          "url": "https://supabase.com/dashboard/project/kumktekvqkjjojpiecdv"
+        }
+      ]
     }
   ],
   "hidden": [
