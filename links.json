@@ -172,7 +172,8 @@
       "links": [
         {
           "label": "PROJECT: BPD MASTERSEARCH",
-          "url": "https://supabase.com/dashboard/project/kumktekvqkjjojpiecdv"
+          "url": "https://supabase.com/dashboard/project/kumktekvqkjjojpiecdv",
+          "note": "pro"
         },
         {
           "label": "ORG: BPD REPNET",
