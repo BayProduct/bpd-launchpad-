@@ -181,6 +181,10 @@
         {
           "label": "Main page with all orgs",
           "url": "https://supabase.com/dashboard/organizations"
+        },
+        {
+          "label": "PROJECT: T-HUB",
+          "url": "https://supabase.com/dashboard/project/klgewpeqcokviweyvmce"
         }
       ]
     }
