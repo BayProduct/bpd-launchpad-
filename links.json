@@ -15,10 +15,6 @@
         {
           "label": "DOC POLISH ZIP DROP",
           "url": "https://chatgpt.com/g/g-p-6aad770707308191a463a099d4ae5f81-bpd-repnet/c/6a99df9a-b9c0-83e9-97ff-7a0a71191d14"
-        },
-        {
-          "label": "Customized Brochure Resource",
-          "url": "https://claude.ai/project/01a0ebac-530c-7372-8dd9-244cdddc9f48"
         }
       ]
     },
@@ -172,6 +168,7 @@
     }
   ],
   "hidden": [
-    "https://claude.ai/artifact/PBWcYsL3UeFXMcQBPt6FEp"
+    "https://claude.ai/artifact/PBWcYsL3UeFXMcQBPt6FEp",
+    "https://claude.ai/project/01a0ebac-530c-7372-8dd9-244cdddc9f48"
   ]
 }
