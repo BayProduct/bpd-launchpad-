@@ -44,14 +44,14 @@
           "note": "Send brochures and price lists to rebrand as TITAN / bpd"
         },
         {
-          "label": "Behavioral Health Catalog Order",
-          "url": "https://bayproduct.github.io/CUSTOMIZED_BROCHURE_NORMATIVE/",
-          "note": "Pick products and build a catalog ticket for Claude"
-        },
-        {
           "label": "BPD Custom Catalogs",
           "url": "https://bayproduct.github.io/CUSTOM_CATALOG_INDEX/",
           "note": "Flip through sample catalogs"
+        },
+        {
+          "label": "Behavioral Health Catalog Order",
+          "url": "https://bayproduct.github.io/CUSTOMIZED_BROCHURE_NORMATIVE/",
+          "note": "Pick products and build a catalog ticket for Claude"
         }
       ]
     },
